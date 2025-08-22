@@ -24,13 +24,19 @@ echo "Dotfiles directory: $DOTFILES_DIR"
 # Check for existing configs & backup if needed
 backup_if_exists() {
 	local target="$1"
-	if [ -e "$target" ] && [ ! -L "$target" ]; then
-		echo "Backing up existing $target to ${target}.backup"
-		mv "$target" "${target}.backup"
+	if [ -e "$target" ]; then
+		if [ -L "$target" ]; then
+			echo "$target is already a symlink, removing..."
+			rm "$target"
+		else
+			echo "Backing up existing $target to ${target}.backup"
+			mv "$target" "${target}.backup"
+		fi
 	fi
 }
 
 # Backup existing configs
+echo "Checking for existing configurations..."
 backup_if_exists "$HOME/.config/sway"
 backup_if_exists "$HOME/.config/waybar"
 backup_if_exists "$HOME/.zshrc"
@@ -40,6 +46,18 @@ backup_if_exists "$HOME/.bash_profile"
 
 # Stow the packages
 echo "Creating symlinks..."
-stow sway waybar zsh bash
-
-echo "Dotfiles installation complete!"
+if stow sway waybar zsh bash; then
+	echo "Successfully created all symlinks!"
+else
+	echo "Stow failed. Trying with --adopt to handle conflicts..."
+	echo "This will overwrite your dotfiles with any existing files."
+	read -p "Continue? (y/N): " -n 1 -r
+	echo
+	if [[ $REPLY =~ ^[Yy]$ ]]; then
+		stow --adopt sway waybar zsh bash
+		echo "Symlinks created with --adopt"
+	else
+		echo "Installation cancelled"
+		exit 1
+	fi
+fi
