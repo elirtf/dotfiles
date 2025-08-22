@@ -33,9 +33,13 @@ backup_if_exists() {
 # Backup existing configs
 backup_if_exists "$HOME/.config/sway"
 backup_if_exists "$HOME/.config/waybar"
+backup_if_exists "$HOME/.zshrc"
+backup_if_exists "$HOME/.zprofile"
+backup_if_exists "$HOME/.bashrc"
+backup_if_exists "$HOME/.bash_profile"
 
 # Stow the packages
 echo "Creating symlinks..."
-stow sway waybar
+stow sway waybar zsh bash
 
 echo "Dotfiles installation complete!"
