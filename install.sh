@@ -39,6 +39,8 @@ backup_if_exists() {
 echo "Checking for existing configurations..."
 backup_if_exists "$HOME/.config/sway"
 backup_if_exists "$HOME/.config/waybar"
+backup_if_exists "$HOME/.config/starship.toml"
+backup_if_exists "$HOME/.config/zsh"
 backup_if_exists "$HOME/.zshrc"
 backup_if_exists "$HOME/.zprofile"
 backup_if_exists "$HOME/.bashrc"
@@ -54,7 +56,7 @@ else
 	read -p "Continue? (y/N): " -n 1 -r
 	echo
 	if [[ $REPLY =~ ^[Yy]$ ]]; then
-		stow --adopt sway waybar zsh bash
+		stow --adopt sway waybar zsh bash starship zsh-config
 		echo "Symlinks created with --adopt"
 	else
 		echo "Installation cancelled"
